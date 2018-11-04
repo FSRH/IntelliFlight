@@ -8,7 +8,6 @@ static volatile uint32_t system_millis;
 
 void msleep(uint32_t delay);
 uint32_t mtime(void);
-void clock_setup(void);
 static void clockSetup(void);
 
 static void clockSetup(void) {
