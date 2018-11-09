@@ -51,7 +51,7 @@ file(GLOB_RECURSE INC_FILES "include/*.h" "include/*.tpp")
 include_directories(src)
 
 # Specify output executable
-add_executable(${PROJECT_NAME}.elf main.cpp ${INC_FILES} ${SOURCE_FILES})
+add_executable(${PROJECT_NAME}.elf main.cpp ${INC_FILES} ${SOURCE_FILES} src/openflightcontroller/console.h)
 target_link_libraries(${PROJECT_NAME}.elf bmp280)
 
 # Output elf file size

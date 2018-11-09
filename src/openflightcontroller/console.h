@@ -1,7 +1,5 @@
-#ifndef INTELLIFLIGHT
-#define INTELLIFLIGHT
-
-#include <openflightcontroller/board_defines.h>
+#ifndef CONSOLE_H
+#define CONSOLE_H
 
 #include <libopencm3/stm32/rcc.h>
 #include <setjmp.h>
@@ -11,32 +9,35 @@
 #include <libopencm3/stm32/f7/nvic.h>
 #include <libopencm3/cm3/systick.h>
 
-#include <openflightcontroller/console.h>
+void console_putc(char c);
+char console_getc(int wait);
+void console_puts(char *s);
+int console_gets(char *s, int len);
 
+/* this is for fun, if you type ^C to this example it will reset */
+//#define RESET_ON_CTRLC
+
+#ifdef RESET_ON_CTRLC
+
+/* Jump buffer for setjmp/longjmp */
+jmp_buf	jump_buf;
+
+static void do_the_nasty(void);
 /*
- * Some definitions of our console "functions" attached to the
- * USART.
+ * do_the_nasty
  *
- * These define sort of the minimum "library" of functions which
- * we can use on a serial port. If you wish to use a different
- * USART there are several things to change:
- *	- CONSOLE_UART change this
- *	- Change the peripheral enable clock
- *	- add usartx_isr for interrupts
- *	- nvic_enable_interrupt(your choice of USART/UART)
- *	- GPIO pins for transmit/receive
- *		(may be on different alternate functions as well)
+ * This is a hack to implement the equivalent of a signal interrupt
+ * in a system without signals or a kernel or scheduler. Basically
+ * when the console_getc() function reads a '^C' character, it munges
+ * the return address of the interrupt to here, and then this function
+ * does a longjump to the last place we did a setjmp.
  */
-
-/* Called when systick fires */
-void sys_tick_handler(void)
+static void do_the_nasty(void)
 {
-    system_millis++;
+    longjmp(jump_buf, 1);
+    while (1);
 }
-
-#define CONSOLE_UART	UART7
-
-
+#endif
 
 /* This is a ring buffer to holding characters as they are typed
  * it maintains both the place to put the next character received
@@ -220,86 +221,4 @@ void countdown(void)
     }
 }
 
-/*
- * Set up the GPIO subsystem with an "Alternate Function"
- * on some of the pins, in this case connected to a
- * USART.
- */
-int main(void)
-{
-    clockSetup();
-
-    char buf[128];
-    int	len;
-    bool pmask;
-
-    /* MUST enable the GPIO clock in ADDITION to the USART clock */
-    rcc_periph_clock_enable(RCC_GPIOE);
-
-    /* This example uses PA9 and PA10 for Tx and Rx respectively
-     * but other pins are available for this role on UART7 (our chosen
-     * USART) as well. We are using the ones mentioned above because they
-     * are connected to the programmer on the board through some jumpers.
-     */
-    gpio_mode_setup(GPIOE, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO7 | GPIO8);
-
-    /* Actual Alternate function number (in this case 7) is part
-     * depenedent, CHECK THE DATA SHEET for the right number to
-     * use.
-     */
-    gpio_set_af(GPIOE, GPIO_AF8, GPIO7 | GPIO8);
-
-
-    /* This then enables the clock to the UART7 peripheral which is
-     * attached inside the chip to the APB1 bus. Different peripherals
-     * attach to different buses, and even some UARTS are attached to
-     * APB1 and some to APB2, again the data sheet is useful here.
-     */
-    rcc_periph_clock_enable(RCC_USART7);
-
-    /* Set up USART/UART parameters using the libopencm3 helper functions */
-    usart_set_baudrate(CONSOLE_UART, 115200);
-    usart_set_databits(CONSOLE_UART, 8);
-    usart_set_stopbits(CONSOLE_UART, USART_STOPBITS_1);
-    usart_set_mode(CONSOLE_UART, USART_MODE_TX_RX);
-    usart_set_parity(CONSOLE_UART, USART_PARITY_NONE);
-    usart_set_flow_control(CONSOLE_UART, USART_FLOWCONTROL_NONE);
-    usart_enable(CONSOLE_UART);
-
-    /* Enable interrupts from the USART */
-    nvic_enable_irq(NVIC_UART7_IRQ);
-
-    /* Specifically enable recieve interrupts */
-    usart_enable_rx_interrupt(CONSOLE_UART);
-
-    /* At this point our console is ready to go so we can create our
-     * simple application to run on it.
-     */
-    console_puts("\nUART Demonstration Application\n");
-#ifdef RESET_ON_CTRLC
-    console_puts("Press ^C at any time to reset system.\n");
-    pmask = cm_mask_interrupts(0);
-    cm_mask_interrupts(pmask);
-    if (setjmp(jump_buf)) {
-        console_puts("\nInterrupt received! Restarting from the top\n");
-    }
-#endif
-    while (1) {
-        console_puts("Enter a string: ");
-        len = console_gets(buf, 128);
-        if (len) {
-            if (buf[0] == 'c') {
-                console_puts("\n");
-                countdown();	/* long running thing (20
-						   seconds) */
-            }
-            console_puts("\nYou entered : '");
-            console_puts(buf);
-            console_puts("'\n");
-        } else {
-            console_puts("\nNo string entered\n");
-        }
-    }
-}
-
-#endif //INTELLIFLIGHT
+#endif //CONSOLE_H
