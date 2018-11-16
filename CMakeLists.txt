@@ -42,6 +42,12 @@ include(cmake/compile_flags.cmake)
 # Include bmp280 api
 include(cmake/bmp280.cmake)
 
+## Include spektrum_rri api
+#include(cmake/spektrum_rri.cmake)
+
+# Include cleanflight api
+include(cmake/cleanflight.cmake)
+
 # Collect sources into SOURCE_FILES variable and include your headers directory
 file(GLOB_RECURSE SOURCE_FILES "src/*.c" "src/*.cpp")
 file(GLOB_RECURSE INC_FILES "include/*.h" "include/*.tpp")

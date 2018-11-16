@@ -4,3 +4,6 @@
 [submodule "lib/BMP280_driver"]
 	path = lib/BMP280_driver
 	url = git@github.com:BoschSensortec/BMP280_driver.git
+[submodule "lib/cleanflight"]
+	path = lib/cleanflight
+	url = git@github.com:cleanflight/cleanflight.git

@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_C_EXTENSIONS NO)
 set(CMAKE_CXX_EXTENSIONS NO)
 
+# TODO: make asm() extension working
 # Flags that apply to both C and C++
 set(COMMON_WARN_FLAGS "${COMMON_WARN_FLAGS} -pedantic -Wall -Wextra \
 -Wcast-align -Wcast-qual -Wconversion -Wdisabled-optimization -Wdouble-promotion -Wduplicated-cond \
