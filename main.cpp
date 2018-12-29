@@ -49,14 +49,12 @@ bmp280_com_fptr_t bmp280_com_read = [](uint8_t dev_id, uint8_t reg_addr, uint8_t
     gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
 
     spi_send(BMP280_MAG_SPI, reg_addr); // request data
-    uint16_t answer = spi_read(BMP280_MAG_SPI);
-//    uint16_t answer2 = spi_read(BMP280_MAG_SPI);
+//    uint16_t answer = spi_read8(BMP280_MAG_SPI);
 
 
     // write data to receive buffer
-    for (int idx = 0; idx < len; idx++) {
-// TODO: here is a problem, this funktion is waiting to get an answer from the spi receive methode!
-        auto answer = spi_read(BMP280_MAG_SPI);
+    for (int idx = 0; idx < (len / 8); idx++) {
+        auto answer = spi_read8(BMP280_MAG_SPI);
         data[idx] = static_cast<uint8_t>(BIT_GET_SUFFIX(answer, 8));
     }
 
@@ -69,11 +67,11 @@ bmp280_com_fptr_t bmp280_com_write = [](uint8_t dev_id, uint8_t reg_addr, uint8_
     gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
 
     // write data beginning with register `reg_addr`
-    for (uint8_t idx = 0; idx < len; idx++) {
+    for (int idx = 0; idx < (len / 8); idx++) {
         spi_send(BMP280_MAG_SPI, static_cast<uint16_t> (reg_addr + idx));
-        spi_read(BMP280_MAG_SPI);
+        spi_read8(BMP280_MAG_SPI);
         spi_send(BMP280_MAG_SPI, data[idx]);
-        spi_read(BMP280_MAG_SPI);
+        spi_read8(BMP280_MAG_SPI);
     }
 
     gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (disable chip)
@@ -110,8 +108,8 @@ int main(void) {
     conf.filter = BMP280_FILTER_COEFF_16;
     conf.odr = BMP280_ODR_0_5_MS;
 
-//    rslt = bmp280_init(&bmp);
-//    rslt = bmp280_set_config(&conf, &bmp);
+    rslt = bmp280_init(&bmp);
+    rslt = bmp280_set_config(&conf, &bmp);
 
     while (true) {
 //        gpio_clear(GPIOA, GPIO2);
@@ -122,9 +120,15 @@ int main(void) {
 
 //        int8_t answer = bmp280_get_regs(0xD0, 0x0, 0, &bmp);
 
+//        gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
+//        spi_send(BMP280_MAG_SPI, 0xD0); // request data
+//        for (int i = 0; i < 2; i++)
+//            spi_read(BMP280_MAG_SPI);
+//        gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);
+
         gpio_toggle(GPIOC, GPIO13);
-        for (int i = 0; i < 500000; i++) {}
-        if(counterIsr >= 5){
+        for (int i = 0; i < 5000000; i++) {}
+        if (counterIsr >= 5) {
             gpio_set(GPIOE, GPIO14);
         }
     }

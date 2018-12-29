@@ -27,6 +27,10 @@ static void gpioSetup(void) {
     gpio_mode_setup(GPIOC, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO13);
     gpio_set_output_options(GPIOC, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO13);
 
+    rcc_periph_clock_enable(RCC_GPIOD);
+    gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO12);
+    gpio_set_output_options(GPIOD, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO12);
+
     rcc_periph_clock_enable(RCC_GPIOE);
     gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_OTYPE_PP, GPIO14);
     gpio_set_output_options(GPIOE, GPIO_OTYPE_PP, GPIO_OSPEED_50MHZ, GPIO14);

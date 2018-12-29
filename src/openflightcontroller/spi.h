@@ -36,59 +36,59 @@ struct pin {
 };
 
 static void spi_setup(void) {
-    spi header;
-    header.clken = RCC_SPI4;
-    header.spi = SPI4;
-
-    pin mosi;
-    mosi.clken = RCC_GPIOE;
-    mosi.alt_func_num = GPIO_AF5;
-    mosi.gpioport = GPIOE;
-    mosi.gpios = GPIO6;
-
-    pin miso;
-    miso.clken = RCC_GPIOE;
-    miso.alt_func_num = GPIO_AF5;
-    miso.gpioport = GPIOE;
-    miso.gpios = GPIO5;
-
-    pin sck;
-    sck.clken = RCC_GPIOE;
-    sck.alt_func_num = GPIO_AF5;
-    sck.gpioport = GPIOE;
-    sck.gpios = GPIO2;
-
-    pin css;
-    css.clken = RCC_GPIOA;
-    css.gpioport = GPIOA;
-    css.gpios = GPIO2;
-
 //    spi header;
-//    header.clken = RCC_SPI2;
-//    header.spi = SPI2;
+//    header.clken = RCC_SPI4;
+//    header.spi = SPI4;
 //
 //    pin mosi;
-//    mosi.clken = RCC_GPIOB;
+//    mosi.clken = RCC_GPIOE;
 //    mosi.alt_func_num = GPIO_AF5;
-//    mosi.gpioport = GPIOB;
-//    mosi.gpios = GPIO15;
+//    mosi.gpioport = GPIOE;
+//    mosi.gpios = GPIO6;
 //
 //    pin miso;
-//    miso.clken = RCC_GPIOB;
+//    miso.clken = RCC_GPIOE;
 //    miso.alt_func_num = GPIO_AF5;
-//    miso.gpioport = GPIOB;
-//    miso.gpios = GPIO14;
+//    miso.gpioport = GPIOE;
+//    miso.gpios = GPIO5;
 //
 //    pin sck;
-//    sck.clken = RCC_GPIOD;
+//    sck.clken = RCC_GPIOE;
 //    sck.alt_func_num = GPIO_AF5;
-//    sck.gpioport = GPIOD;
-//    sck.gpios = GPIO3;
+//    sck.gpioport = GPIOE;
+//    sck.gpios = GPIO2;
 //
 //    pin css;
-//    css.clken = RCC_GPIOD;
-//    css.gpioport = GPIOD;
-//    css.gpios = GPIO12;
+//    css.clken = RCC_GPIOA;
+//    css.gpioport = GPIOA;
+//    css.gpios = GPIO2;
+
+    spi header;
+    header.clken = RCC_SPI2;
+    header.spi = SPI2;
+
+    pin mosi;
+    mosi.clken = RCC_GPIOB;
+    mosi.alt_func_num = GPIO_AF5;
+    mosi.gpioport = GPIOB;
+    mosi.gpios = GPIO15;
+
+    pin miso;
+    miso.clken = RCC_GPIOB;
+    miso.alt_func_num = GPIO_AF5;
+    miso.gpioport = GPIOB;
+    miso.gpios = GPIO14;
+
+    pin sck;
+    sck.clken = RCC_GPIOD;
+    sck.alt_func_num = GPIO_AF5;
+    sck.gpioport = GPIOD;
+    sck.gpios = GPIO3;
+
+    pin css;
+    css.clken = RCC_GPIOD;
+    css.gpioport = GPIOD;
+    css.gpios = GPIO12;
 
     rcc_periph_clock_enable(header.clken);
     rcc_periph_clock_enable(mosi.clken);
