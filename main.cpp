@@ -110,8 +110,8 @@ int main(void) {
     conf.filter = BMP280_FILTER_COEFF_16;
     conf.odr = BMP280_ODR_0_5_MS;
 
-    rslt = bmp280_init(&bmp);
-    rslt = bmp280_set_config(&conf, &bmp);
+//    rslt = bmp280_init(&bmp);
+//    rslt = bmp280_set_config(&conf, &bmp);
 
     while (true) {
 //        gpio_clear(GPIOA, GPIO2);
@@ -127,6 +127,18 @@ int main(void) {
 //        for (int i = 0; i < 2; i++)
 //            spi_read(BMP280_MAG_SPI);
 //        gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);
+
+        gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
+        spi_send8(BMP280_MAG_SPI, 0xFA); // request data
+        spi_read8(BMP280_MAG_SPI);
+
+//        for (int i = 0; i < 200; i++){}
+
+        for (int i = 0; i < 24; i++) {
+            spi_send8(BMP280_MAG_SPI, 0x00);
+            spi_read8(BMP280_MAG_SPI);
+        }
+        gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);
 
         gpio_toggle(GPIOC, GPIO13);
         for (int i = 0; i < 5000000; i++) {}

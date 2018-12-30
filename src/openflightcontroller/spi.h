@@ -133,7 +133,7 @@ static void spi_setup(void) {
     /* e) Configure the CRCL and CRCEN bits if CRC is needed (while SCK clock signal is
      * at idle state). */
     //TODO: Add the zero position of CRCEN to libopencm3
-//    spi_cr1 |= SPI_CR1_CRCL_8BIT;
+    spi_cr1 |= SPI_CR1_CRCL_8BIT | SPI_CR1_CRCEN;
 
     /* f) Configure SSM and SSI (Notes: 2 & 3). */
     //TODO: Add the zero position of SSM and SSI to libopencm3
