@@ -46,17 +46,17 @@ void sys_tick_handler(void) {
 
 
 bmp280_com_fptr_t bmp280_com_read = [](uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t len) -> int8_t {
+    //TODO: Use dev id
     gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
 
-    spi_send(BMP280_MAG_SPI, reg_addr); // request data
-//    uint16_t answer = spi_read8(BMP280_MAG_SPI);
-
+    spi_send8(BMP280_MAG_SPI, reg_addr); // request data
+    spi_read8(BMP280_MAG_SPI);
 
     // write data to receive buffer
-    for (uint16_t idx = 0; idx < len;) {
-        auto answer = spi_read8(BMP280_MAG_SPI);
-        data[static_cast<int>(idx) / 8] = static_cast<uint8_t>(BIT_GET_SUFFIX(answer, 8));
-        idx += 0x08;
+    for (int idx = 0; idx < static_cast<int>(len); idx++) {
+        spi_send8(BMP280_MAG_SPI, 0x00);
+        uint8_t answer = spi_read8(BMP280_MAG_SPI);
+        data[idx] = static_cast<uint8_t>(BIT_GET_SUFFIX(answer, 8));
     }
 
     gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (disable chip)
@@ -65,15 +65,15 @@ bmp280_com_fptr_t bmp280_com_read = [](uint8_t dev_id, uint8_t reg_addr, uint8_t
 };
 
 bmp280_com_fptr_t bmp280_com_write = [](uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t len) -> int8_t {
+    //TODO: Use dev id
     gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
 
     // write data beginning with register `reg_addr`
-    for (uint16_t idx = 0; idx < len;) {
-        spi_send(BMP280_MAG_SPI, static_cast<uint16_t> (reg_addr + static_cast<int>(idx) / 8));
+    for (int idx = 0; idx < static_cast<int>(len); idx++) {
+        spi_send8(BMP280_MAG_SPI, static_cast<uint8_t> (reg_addr));
         spi_read8(BMP280_MAG_SPI);
-        spi_send(BMP280_MAG_SPI, data[static_cast<int>(idx) / 8]);
+        spi_send8(BMP280_MAG_SPI, data[idx]);
         spi_read8(BMP280_MAG_SPI);
-        idx += 0x08;
     }
 
     gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (disable chip)
@@ -83,7 +83,7 @@ bmp280_com_fptr_t bmp280_com_write = [](uint8_t dev_id, uint8_t reg_addr, uint8_
 
 
 bmp280_delay_fptr_t bmp280_delay = [](uint32_t period) -> void {
-//    msleep(period);
+    msleep(period);
 };
 
 int main(void) {
@@ -93,8 +93,7 @@ int main(void) {
     spi_setup();
     uartSetup();
 
-    int8_t rslt;
-    bmp280_dev bmp;
+    bmp280_dev bmp{};
 
 /* Sensor interface over SPI with native chip select line */
     bmp.dev_id = 0;
@@ -103,42 +102,28 @@ int main(void) {
     bmp.write = bmp280_com_write;
     bmp.delay_ms = bmp280_delay;
 
-    bmp280_config conf;
+    bmp280_config conf{};
     conf.spi3w_en = BMP280_SPI3_WIRE_DISABLE;
     conf.os_pres = BMP280_OS_16X;
     conf.os_temp = BMP280_OS_2X;
     conf.filter = BMP280_FILTER_COEFF_16;
     conf.odr = BMP280_ODR_0_5_MS;
 
-//    rslt = bmp280_init(&bmp);
-//    rslt = bmp280_set_config(&conf, &bmp);
+    bmp280_uncomp_data data{};
+    data.uncomp_temp = 0;
+    data.uncomp_press = 0;
+
+    bmp280_init(&bmp);
+    bmp280_set_config(&conf, &bmp);
+    bmp280_set_power_mode(BMP280_NORMAL_MODE, &bmp);
+
+    int8_t uncmp_temp = 0;
+    double cmp_temp = 0;
 
     while (true) {
-//        gpio_clear(GPIOA, GPIO2);
-//        spi_send(SPI4, 0xD0);
-//        uint16_t answer = spi_read(SPI4);
-//        uint16_t answer2 = spi_read(SPI4);
-//        gpio_set(GPIOA, GPIO2);
-
-//        int8_t answer = bmp280_get_regs(0xD0, 0x0, 0, &bmp);
-
-//        gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
-//        spi_send(BMP280_MAG_SPI, 0xD0); // request data
-//        for (int i = 0; i < 2; i++)
-//            spi_read(BMP280_MAG_SPI);
-//        gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);
-
-        gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
-        spi_send8(BMP280_MAG_SPI, 0xFA); // request data
-        spi_read8(BMP280_MAG_SPI);
-
-//        for (int i = 0; i < 200; i++){}
-
-        for (int i = 0; i < 24; i++) {
-            spi_send8(BMP280_MAG_SPI, 0x00);
-            spi_read8(BMP280_MAG_SPI);
-        }
-        gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);
+        //TODO: BMP Einstellungen überprüfen
+        uncmp_temp = bmp280_get_uncomp_data(&data, &bmp);
+        cmp_temp = bmp280_comp_temp_double(static_cast<uint32_t >(uncmp_temp), &bmp);
 
         gpio_toggle(GPIOC, GPIO13);
         for (int i = 0; i < 5000000; i++) {}
