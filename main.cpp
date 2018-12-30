@@ -70,7 +70,7 @@ bmp280_com_fptr_t bmp280_com_write = [](uint8_t dev_id, uint8_t reg_addr, uint8_
 
     // write data beginning with register `reg_addr`
     for (int idx = 0; idx < static_cast<int>(len); idx++) {
-        spi_send8(BMP280_MAG_SPI, static_cast<uint8_t> (reg_addr));
+        spi_send8(BMP280_MAG_SPI, reg_addr);
         spi_read8(BMP280_MAG_SPI);
         spi_send8(BMP280_MAG_SPI, data[idx]);
         spi_read8(BMP280_MAG_SPI);
@@ -117,13 +117,14 @@ int main(void) {
     bmp280_set_config(&conf, &bmp);
     bmp280_set_power_mode(BMP280_NORMAL_MODE, &bmp);
 
-    int8_t uncmp_temp = 0;
-    double cmp_temp = 0;
+    double comp_temp = 0;
+    double comp_press = 0;
 
     while (true) {
         //TODO: BMP Einstellungen überprüfen
-        uncmp_temp = bmp280_get_uncomp_data(&data, &bmp);
-        cmp_temp = bmp280_comp_temp_double(static_cast<uint32_t >(uncmp_temp), &bmp);
+        bmp280_get_uncomp_data(&data, &bmp);
+        comp_temp = bmp280_comp_temp_double(data.uncomp_temp, &bmp);
+        comp_press = bmp280_comp_pres_double(data.uncomp_press, &bmp);
 
         gpio_toggle(GPIOC, GPIO13);
         for (int i = 0; i < 5000000; i++) {}
