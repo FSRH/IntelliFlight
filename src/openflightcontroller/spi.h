@@ -36,79 +36,25 @@ struct pin {
 };
 
 static void spi_setup(void) {
-//    spi header;
-//    header.clken = RCC_SPI4;
-//    header.spi = SPI4;
-//
-//    pin mosi;
-//    mosi.clken = RCC_GPIOE;
-//    mosi.alt_func_num = GPIO_AF5;
-//    mosi.gpioport = GPIOE;
-//    mosi.gpios = GPIO6;
-//
-//    pin miso;
-//    miso.clken = RCC_GPIOE;
-//    miso.alt_func_num = GPIO_AF5;
-//    miso.gpioport = GPIOE;
-//    miso.gpios = GPIO5;
-//
-//    pin sck;
-//    sck.clken = RCC_GPIOE;
-//    sck.alt_func_num = GPIO_AF5;
-//    sck.gpioport = GPIOE;
-//    sck.gpios = GPIO2;
-//
-//    pin css;
-//    css.clken = RCC_GPIOA;
-//    css.gpioport = GPIOA;
-//    css.gpios = GPIO2;
-
-    spi header;
-    header.clken = RCC_SPI2;
-    header.spi = SPI2;
-
-    pin mosi;
-    mosi.clken = RCC_GPIOB;
-    mosi.alt_func_num = GPIO_AF5;
-    mosi.gpioport = GPIOB;
-    mosi.gpios = GPIO15;
-
-    pin miso;
-    miso.clken = RCC_GPIOB;
-    miso.alt_func_num = GPIO_AF5;
-    miso.gpioport = GPIOB;
-    miso.gpios = GPIO14;
-
-    pin sck;
-    sck.clken = RCC_GPIOD;
-    sck.alt_func_num = GPIO_AF5;
-    sck.gpioport = GPIOD;
-    sck.gpios = GPIO3;
-
-    pin css;
-    css.clken = RCC_GPIOD;
-    css.gpioport = GPIOD;
-    css.gpios = GPIO12;
-
-    rcc_periph_clock_enable(header.clken);
-    rcc_periph_clock_enable(mosi.clken);
-    rcc_periph_clock_enable(miso.clken);
-    rcc_periph_clock_enable(sck.clken);
-    rcc_periph_clock_enable(css.clken);
+    rcc_periph_clock_enable(spi_bmp280_ak8963n.clken);
+    rcc_periph_clock_enable(spi_mosi_bmp280_ak8963n.clken);
+    rcc_periph_clock_enable(spi_miso_bmp280_ak8963n.clken);
+    rcc_periph_clock_enable(spi_sck_bmp280_ak8963n.clken);
+    rcc_periph_clock_enable(spi_css_bmp280.clken);
 
     /* 1.Write proper GPIO registers: Configure GPIO for MOSI, MISO and SCK pins. */
-    gpio_mode_setup(miso.gpioport, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, miso.gpios);
-    gpio_mode_setup(mosi.gpioport, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, mosi.gpios);
-    gpio_mode_setup(sck.gpioport, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, sck.gpios);
-    gpio_set_af(miso.gpioport, miso.alt_func_num, miso.gpios);
-    gpio_set_af(mosi.gpioport, mosi.alt_func_num, mosi.gpios);
-    gpio_set_af(sck.gpioport, sck.alt_func_num, sck.gpios);
-    gpio_set_output_options(mosi.gpioport, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, mosi.gpios);
-    gpio_set_output_options(sck.gpioport, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, sck.gpios);
+    gpio_mode_setup(spi_miso_bmp280_ak8963n.gpioport, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, spi_miso_bmp280_ak8963n.gpios);
+    gpio_mode_setup(spi_mosi_bmp280_ak8963n.gpioport, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, spi_mosi_bmp280_ak8963n.gpios);
+    gpio_mode_setup(spi_sck_bmp280_ak8963n.gpioport, GPIO_MODE_AF, GPIO_PUPD_PULLDOWN, spi_sck_bmp280_ak8963n.gpios);
+    gpio_set_af(spi_miso_bmp280_ak8963n.gpioport, spi_miso_bmp280_ak8963n.alt_func_num, spi_miso_bmp280_ak8963n.gpios);
+    gpio_set_af(spi_mosi_bmp280_ak8963n.gpioport, spi_mosi_bmp280_ak8963n.alt_func_num, spi_mosi_bmp280_ak8963n.gpios);
+    gpio_set_af(spi_sck_bmp280_ak8963n.gpioport, spi_sck_bmp280_ak8963n.alt_func_num, spi_sck_bmp280_ak8963n.gpios);
+    gpio_set_output_options(spi_mosi_bmp280_ak8963n.gpioport, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, spi_mosi_bmp280_ak8963n.gpios);
+    gpio_set_output_options(spi_sck_bmp280_ak8963n.gpioport, GPIO_OTYPE_PP, GPIO_OSPEED_25MHZ, spi_sck_bmp280_ak8963n.gpios);
 
     /* Chip select spi header */
-    gpio_set(css.gpioport, css.gpios);
-    gpio_mode_setup(css.gpioport, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, css.gpios);
+    gpio_set(spi_css_bmp280.gpioport, spi_css_bmp280.gpios);
+    gpio_mode_setup(spi_css_bmp280.gpioport, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, spi_css_bmp280.gpios);
 
 
     uint16_t spi_cr1 = 0x00;
@@ -179,9 +125,9 @@ static void spi_setup(void) {
      * DMA registers if the DMA streams are used. */
     // Not needed in this examle
 
-    SPI_CRCPR(header.spi) = spi_crcpr;
-    SPI_CR2(header.spi) = spi_cr2;
-    SPI_CR1(header.spi) = spi_cr1;
+    SPI_CRCPR(spi_bmp280_ak8963n.spi) = spi_crcpr;
+    SPI_CR2(spi_bmp280_ak8963n.spi) = spi_cr2;
+    SPI_CR1(spi_bmp280_ak8963n.spi) = spi_cr1;
 }
 
 #endif //INTELLIFLIGHT_SPI_H
