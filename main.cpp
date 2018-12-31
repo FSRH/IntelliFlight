@@ -47,36 +47,36 @@ void sys_tick_handler(void) {
 
 bmp280_com_fptr_t bmp280_com_read = [](uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t len) -> int8_t {
     //TODO: Use dev id
-    gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
+    gpio_clear(spi_css_bmp280.gpioport, spi_css_bmp280.gpios);   //CSS (enable chip)
 
-    spi_send8(BMP280_MAG_SPI, reg_addr); // request data
-    spi_read8(BMP280_MAG_SPI);
+    spi_send8(spi_bmp280_ak8963n.spi, reg_addr); // request data
+    spi_read8(spi_bmp280_ak8963n.spi);
 
     // write data to receive buffer
     for (int idx = 0; idx < static_cast<int>(len); idx++) {
-        spi_send8(BMP280_MAG_SPI, 0x00);
-        uint8_t answer = spi_read8(BMP280_MAG_SPI);
+        spi_send8(spi_bmp280_ak8963n.spi, 0x00);
+        uint8_t answer = spi_read8(spi_bmp280_ak8963n.spi);
         data[idx] = static_cast<uint8_t>(BIT_GET_SUFFIX(answer, 8));
     }
 
-    gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (disable chip)
+    gpio_set(spi_css_bmp280.gpioport, spi_css_bmp280.gpios);   //CSS (disable chip)
 
     return BMP280_OK;
 };
 
 bmp280_com_fptr_t bmp280_com_write = [](uint8_t dev_id, uint8_t reg_addr, uint8_t *data, uint16_t len) -> int8_t {
     //TODO: Use dev id
-    gpio_clear(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (enable chip)
+    gpio_clear(spi_css_bmp280.gpioport, spi_css_bmp280.gpios);   //CSS (enable chip)
 
     // write data beginning with register `reg_addr`
     for (int idx = 0; idx < static_cast<int>(len); idx++) {
-        spi_send8(BMP280_MAG_SPI, reg_addr);
-        spi_read8(BMP280_MAG_SPI);
-        spi_send8(BMP280_MAG_SPI, data[idx]);
-        spi_read8(BMP280_MAG_SPI);
+        spi_send8(spi_bmp280_ak8963n.spi, reg_addr);
+        spi_read8(spi_bmp280_ak8963n.spi);
+        spi_send8(spi_bmp280_ak8963n.spi, data[idx]);
+        spi_read8(spi_bmp280_ak8963n.spi);
     }
 
-    gpio_set(BMP280_CSS_PORT, BMP280_CSS_GPIO);   //CSS (disable chip)
+    gpio_set(spi_css_bmp280.gpioport, spi_css_bmp280.gpios);   //CSS (disable chip)
 
     return BMP280_OK;
 };
