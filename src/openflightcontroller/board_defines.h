@@ -1,92 +1,48 @@
+#ifndef BOARD_DEFINES_H
+#define BOARD_DEFINES_H
 
-#ifndef INTELLIFLIGHT_BOARD_DEFINES_H
-#define INTELLIFLIGHT_BOARD_DEFINES_H
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/spi.h>
+#include <libopencm3/stm32/rcc.h>
+
+#include <stdint.h>
+#include <stddef.h>
 
 #include "openflightcontroller/clock.h"
 #include "openflightcontroller/gpio.h"
 #include "openflightcontroller/timer.h"
 #include "openflightcontroller/usart.h"
-#include <libopencm3/stm32/rcc.h>
 
-/***************************** BMP280 & AK8963N *****************************/
+/*! @name spi-header structure */
+struct spi_interface {
+    rcc_periph_clken clken;
+    uint32_t spi;
+};
 
-//#define BMP280_CSS_PORT GPIOA
-//#define BMP280_CSS_GPIO GPIO2
+/*! @name pin-definition structure */
+struct gpio_pin {
+    rcc_periph_clken clken;
+    uint8_t alt_func_num;
+    uint32_t gpioport;
+    uint16_t gpios;
+};
+
+/*! @name external spi for th bmp280 and ak8963n sensor */
+const spi_interface spi_bmp280_ak8963n {.clken = RCC_SPI2, .spi = SPI2};
+
+const gpio_pin spi_miso_bmp280_ak8963n = {.clken = RCC_GPIOB, .alt_func_num = GPIO_AF5, .gpioport = GPIOB, .gpios = GPIO14};
+const gpio_pin spi_mosi_bmp280_ak8963n = {.clken = RCC_GPIOB, .alt_func_num = GPIO_AF5, .gpioport = GPIOB, .gpios = GPIO15};
+const gpio_pin spi_sck_bmp280_ak8963n ={.clken = RCC_GPIOD, .alt_func_num = GPIO_AF5, .gpioport = GPIOD, .gpios = GPIO3};
+const gpio_pin spi_css_bmp280 = {.clken = RCC_GPIOD, .gpioport = GPIOD, .gpios = GPIO12};
+
+/*! @name internal spi for th bmp280 and ak8963n sensor */
+//const spi_interface spi_bmp280_ak8963n {.clken = RCC_SPI4, .spi = SPI4};
 //
-//#define MAG_CSS_PORT GPIOA
-//#define MAG_CSS_GPIO GPIO3
-//
-//#define BMP280_SCK_PORT GPIOE
-//#define BMP280_SCK_GPIO GPIO2
-//#define BMP280_SCK_AF GPIO_AF5
-//
-//#define BMP280_MISO_PORT GPIOE
-//#define BMP280_MISO_GPIO GPIO5
-//#define BMP280_MISO_AF GPIO_AF5
-//
-//#define BMP280_MOSI_PORT GPIOE
-//#define BMP280_MOSI_GPIO GPIO6
-//#define BMP280_MOSI_AF GPIO_AF5
-//
-//#define BMP280_MAG_RCC RCC_SPI4
-//#define BMP280_MAG_SPI SPI4
+//const gpio_pin spi_mosi_bmp280_ak8963n {.clken = RCC_GPIOE, .alt_func_num = GPIO_AF5, .gpioport = GPIOE, .gpios = GPIO6};
+//const gpio_pin spi_miso_bmp280_ak8963n {.clken = RCC_GPIOE, .alt_func_num = GPIO_AF5, .gpioport = GPIOE, .gpios = GPIO5};
+//const gpio_pin spi_sck_bmp280_ak8963n {.clken = RCC_GPIOE, .alt_func_num = GPIO_AF5, .gpioport = GPIOE, .gpios = GPIO2};
+//const gpio_pin spi_css_bmp280 {.clken = RCC_GPIOA, .gpioport = GPIOA, .gpios = GPIO2};
+//const gpio_pin spi_css_ak896n {.clken = RCC_GPIOA, .gpioport = GPIOA, .gpios = GPIO3};
 
-#define BMP280_CSS_PORT GPIOA
-#define BMP280_CSS_GPIO GPIO2
-
-#define MAG_CSS_PORT GPIOA
-#define MAG_CSS_GPIO GPIO3
-
-#define BMP280_SCK_PORT GPIOE
-#define BMP280_SCK_GPIO GPIO2
-#define BMP280_SCK_AF GPIO_AF5
-
-#define BMP280_MISO_PORT GPIOE
-#define BMP280_MISO_GPIO GPIO5
-#define BMP280_MISO_AF GPIO_AF5
-
-#define BMP280_MOSI_PORT GPIOE
-#define BMP280_MOSI_GPIO GPIO6
-#define BMP280_MOSI_AF GPIO_AF5
-
-#define BMP280_MAG_RCC RCC_SPI4
-//#define BMP280_MAG_SPI SPI4
-
-#define BMP280_CSS_PORT GPIOD
-#define BMP280_CSS_GPIO GPIO12
-
-#define BMP280_SCK_PORT GPIOD
-#define BMP280_SCK_GPIO GPIO3
-#define BMP280_SCK_AF GPIO_AF5
-
-#define BMP280_MISO_PORT GPIOB
-#define BMP280_MISO_GPIO GPIO14
-#define BMP280_MISO_AF GPIO_AF5
-
-#define BMP280_MOSI_PORT GPIOB
-#define BMP280_MOSI_GPIO GPIO15
-#define BMP280_MOSI_AF GPIO_AF5
-
-#define BMP280_MAG_RCC RCC_SPI2
-#define BMP280_MAG_SPI SPI2
-/**************************** SPI2 (PIN HEADER) *****************************/
-
-#define SPI_HEADER_CSS_PORT GPIOD
-#define SPI_HEADER_CSS_GPIO GPIO13
-
-#define SPI_HEADER_SCK_PORT GPIOD
-#define SPI_HEADER_SCK_GPIO GPIO3
-#define SPI_HEADER_SCK_AF GPIO_AF5
-
-#define SPI_HEADER_MISO_PORT GPIOB
-#define SPI_HEADER_MISO_GPIO GPIO14
-#define SPI_HEADER_MISO_AF GPIO_AF5
-
-#define SPI_HEADER_MOSI_PORT GPIOB
-#define SPI_HEADER_MOSI_GPIO GPIO15
-#define SPI_HEADER_MOSI_AF GPIO_AF5
-
-#define SPI_HEADER_RCC RCC_SPI2
-#define SPI_HEADER_SPI SPI2
-
-#endif //INTELLIFLIGHT_BOARD_DEFINES_H
+#endif //BOARD_DEFINES_H
