@@ -43,6 +43,19 @@ struct gpio_pin {
     uint16_t gpios;
 };
 
+/****************************************************************/
+/*! @name		pin-definition structure
+ *  @note       with pwm function  */
+/****************************************************************/
+struct pwm_pin {
+    uint32_t timer_peripheral;
+    tim_oc_id oc_id;
+    rcc_periph_clken clken;
+    uint8_t alt_func_num;
+    uint32_t gpioport;
+    uint16_t gpios;
+};
+
 /*! @name external spi for the bmp280 and ak8963n sensor */
 //const spi_interface spi_bmp280_ak8963n{.clken = RCC_SPI2, .spi = SPI2};
 //const gpio_pin_altf spi_miso_bmp280_ak8963n = {.clken = RCC_GPIOB, .alt_func_num = GPIO_AF5, .gpioport = GPIOB, .gpios = GPIO14};
@@ -92,5 +105,52 @@ const gpio_pin led2 = {.clken = RCC_GPIOC, .gpioport = GPIOC, .gpios = GPIO13};
 /*! @name led 3
  * @note output
  * @note pwm controlled / dimmable*/
-const gpio_pin_altf led3 = {.clken = RCC_GPIOB, .alt_func_num = GPIO_AF1, .gpioport = GPIOB, .gpios = GPIO2};
+const pwm_pin led3 = {.timer_peripheral = TIM1, .oc_id = TIM_OC4, .clken = RCC_GPIOE, .alt_func_num = GPIO_AF1, .gpioport = GPIOE, .gpios = GPIO14};
+
+
+/*! @name pwm 1
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm1 = {.timer_peripheral = TIM3, .oc_id = TIM_OC3, .clken = RCC_GPIOB, .alt_func_num = GPIO_AF2, .gpioport = GPIOB, .gpios = GPIO0};
+
+/*! @name pwm 2
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm2 = {.timer_peripheral = TIM3, .oc_id = TIM_OC4, .clken = RCC_GPIOB, .alt_func_num = GPIO_AF2, .gpioport = GPIOB, .gpios = GPIO1};
+
+/*! @name pwm 3
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm3 = {.timer_peripheral = TIM1, .oc_id = TIM_OC1, .clken = RCC_GPIOE, .alt_func_num = GPIO_AF1, .gpioport = GPIOE, .gpios = GPIO9};
+
+/*! @name pwm 4
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm4 = {.timer_peripheral = TIM1, .oc_id = TIM_OC2, .clken = RCC_GPIOE, .alt_func_num = GPIO_AF1, .gpioport = GPIOE, .gpios = GPIO11};
+
+/*! @name pwm 5
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm5 = {.timer_peripheral = TIM1, .oc_id = TIM_OC3, .clken = RCC_GPIOE, .alt_func_num = GPIO_AF1, .gpioport = GPIOE, .gpios = GPIO13};
+
+/*! @name pwm 6
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm6 = {.timer_peripheral = TIM2, .oc_id = TIM_OC3, .clken = RCC_GPIOE, .alt_func_num = GPIO_AF1, .gpioport = GPIOB, .gpios = GPIO10};
+
+/*! @name pwm 7
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm7 = {.timer_peripheral = TIM2, .oc_id = TIM_OC4, .clken = RCC_GPIOE, .alt_func_num = GPIO_AF1, .gpioport = GPIOB, .gpios = GPIO11};
+
+/*! @name pwm 8
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm8 = {.timer_peripheral = TIM4, .oc_id = TIM_OC3, .clken = RCC_GPIOE, .alt_func_num = GPIO_AF2, .gpioport = GPIOD, .gpios = GPIO14};
+
+/*! @name pwm 9
+ * @note output
+ * @note pwm controlled / dimmable*/
+const pwm_pin pwm9 = {.timer_peripheral = TIM4, .oc_id = TIM_OC4, .clken = RCC_GPIOE, .alt_func_num = GPIO_AF2, .gpioport = GPIOD, .gpios = GPIO15};
+
 #endif //BOARD_DEFINES_H
