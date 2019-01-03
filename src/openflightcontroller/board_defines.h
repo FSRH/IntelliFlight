@@ -6,9 +6,6 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/rcc.h>
 
-#include <stdint.h>
-#include <stddef.h>
-
 #include "openflightcontroller/clock.h"
 #include "openflightcontroller/gpio.h"
 #include "openflightcontroller/timer.h"
