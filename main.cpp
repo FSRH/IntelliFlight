@@ -5,6 +5,7 @@
 #include <openflightcontroller/board_defines.h>
 #include <bmp280.h>
 #include <openflightcontroller/spi.h>
+#include <lolaserial.h>
 
 int counterIsr = 0;
 
@@ -92,6 +93,11 @@ int main(void) {
 //    timerSetup();
     spi_setup();
     uartSetup();
+
+    lolaserial::proto_conf usage;
+    usage.cmd_len = 10;
+    usage.frame_len = 12;
+
 
     bmp280_dev bmp{};
 

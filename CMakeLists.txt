@@ -42,6 +42,9 @@ include(cmake/compile_flags.cmake)
 # Include bmp280 api
 include(cmake/bmp280.cmake)
 
+# Include low-latency serial api
+include(cmake/lolaserial.cmake)
+
 # Collect sources into SOURCE_FILES variable and include your headers directory
 file(GLOB_RECURSE SOURCE_FILES "src/*.c" "src/*.cpp")
 file(GLOB_RECURSE INC_FILES "include/*.h" "include/*.tpp")
